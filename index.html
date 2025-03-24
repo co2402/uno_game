@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNO Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>UNO Game 🎴</h1>
+
+<div id="game-area">
+  <div id="discard-pile">
+    <h2>Aflegstapel</h2>
+    <div id="discard-card">?</div>
+  </div>
+
+  <div id="player-hand">
+    <h2>Jouw kaarten</h2>
+    <div id="hand"></div>
+  </div>
+
+  <button onclick="drawCard()">Trek een kaart</button>
+  <p id="game-message"></p>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
