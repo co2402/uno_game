@@ -1,53 +1,77 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #2e8b57;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom right, #ff6b6b, #feca57);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
     color: white;
 }
 
-#game-area {
-    margin-top: 20px;
+.game-container {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 1000px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
-#discard-card {
+h1, h2 {
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+#timer {
     font-size: 24px;
     font-weight: bold;
-    padding: 20px;
-    background-color: gray;
+    margin: 15px 0;
+    color: #fff;
+    background-color: rgba(255, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 10px;
     display: inline-block;
+}
+
+#hand, #discard-card {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.card-image {
+    width: 100px;
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
     border-radius: 10px;
 }
 
-#hand {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+.card-image:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
 }
 
-.card {
-    padding: 10px 15px;
-    margin: 5px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    display: inline-block;
-    min-width: 60px;
+#controls {
+    margin: 20px 0;
 }
 
-.card.red { background-color: red; }
-.card.blue { background-color: blue; }
-.card.green { background-color: green; }
-.card.yellow { background-color: yellow; }
-.card.special { background-color: black; color: white; }
-
-button {
-    padding: 10px 20px;
-    font-size: 18px;
-    background-color: white;
-    color: black;
+#draw-card {
+    background-color: #feca57;
+    color: #000;
     border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 10px;
     cursor: pointer;
-    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+#draw-card:hover {
+    background-color: #ff9f43;
 }

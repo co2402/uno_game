@@ -2,30 +2,29 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UNO Game</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="game-container">
+  <h1>UNO Game</h1>
+  <div id="timer">Tijd over: 1:00</div>
 
-<h1>UNO Game 🎴</h1>
-
-<div id="game-area">
   <div id="discard-pile">
     <h2>Aflegstapel</h2>
-    <div id="discard-card">?</div>
+    <div id="discard-card"></div>
   </div>
 
-  <div id="player-hand">
-    <h2>Jouw kaarten</h2>
+  <div id="hand-section">
+    <h2>Jouw Hand</h2>
     <div id="hand"></div>
   </div>
 
-  <button onclick="drawCard()">Trek een kaart</button>
-  <p id="game-message"></p>
+  <div id="controls">
+    <button id="draw-card">Trek een kaart</button>
+  </div>
 </div>
 
 <script src="script.js"></script>
-
 </body>
 </html>

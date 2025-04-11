@@ -1,125 +1,136 @@
-// UNO deck met kleuren en waardes
-const colors = ["red", "blue", "green", "yellow"];
-const values = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Skip", "Reverse", "Draw Two"];
-const specialCards = ["Wild", "Wild Draw Four"];
+const colors = ["Rood", "Groen", "Blauw", "Geel"];
+const values = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
 let deck = [];
 let playerHand = [];
-let discardPile = [];
+let discardPile = "";
+let timeLeft = 10; // Aangepast naar 10 seconden
+let timerInterval;
 
-// Spel initialiseren
-function initializeGame() {
-    generateDeck();
-    shuffleDeck();
-    playerHand = drawCards(7);
-    discardPile.push(drawCardFromDeck());
-    updateGameUI();
+function createDeck() {
+    let deck = [];
+    for (let color of colors) {
+        for (let value of values) {
+            deck.push(`${color} ${value}`);
+        }
+    }
+    return deck.sort(() => Math.random() - 0.5);
 }
 
-// Deck genereren
-function generateDeck() {
-    deck = [];
-    colors.forEach(color => {
-        values.forEach(value => {
-            deck.push({ color, value });
-            if (value !== "0") deck.push({ color, value }); // Elke waarde (behalve 0) komt 2x voor
-        });
+function drawCards(deck, amount) {
+    return deck.splice(0, amount);
+}
+
+function cardToFilename(card) {
+    const [color, value] = card.split(" ");
+
+    const filenameMap = {
+        "Rood": value => (value <= 4 ? `rood_${value}.png` : `Rood_${value}.png`),
+        "Groen": value => (value <= 2 ? `groen_${value}.png` : `Groen_${value}.png`),
+        "Blauw": value => `Blauw_${value}.png`,
+        "Geel": value => (value <= 6 ? `yellow_${value}.png` : `Yellow_${value}.png`)
+    };
+
+    if (filenameMap[color]) {
+        return `images/${filenameMap[color](value)}`;
+    } else {
+        return `images/back.png`;
+    }
+}
+
+function updateHand() {
+    const handDiv = document.getElementById("hand");
+    handDiv.innerHTML = "";
+
+    playerHand.forEach((card, index) => {
+        const img = document.createElement("img");
+        img.src = cardToFilename(card);
+        img.alt = card;
+        img.classList.add("card-image");
+        img.onclick = () => playCard(index);
+        handDiv.appendChild(img);
     });
-    specialCards.forEach(card => {
-        for (let i = 0; i < 4; i++) deck.push({ color: "black", value: card });
-    });
 }
 
-// Deck schudden (Fisher-Yates shuffle)
-function shuffleDeck() {
-    for (let i = deck.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
+function renderDiscardPile() {
+    const discardDiv = document.getElementById("discard-card");
+    discardDiv.innerHTML = "";
+
+    const img = document.createElement("img");
+    img.src = cardToFilename(discardPile);
+    img.alt = discardPile;
+    img.classList.add("card-image");
+    discardDiv.appendChild(img);
 }
 
-// Kaarten trekken
-function drawCards(count) {
-    let cards = [];
-    for (let i = 0; i < count; i++) {
-        cards.push(drawCardFromDeck());
-    }
-    return cards;
-}
-
-// Trek een kaart van de stapel
-function drawCardFromDeck() {
-    if (deck.length === 0) {
-        alert("Deck is leeg! Schudden...");
-        generateDeck();
-        shuffleDeck();
-    }
-    return deck.pop();
-}
-
-// Speler trekt een kaart
-function drawCard() {
-    playerHand.push(drawCardFromDeck());
-    updateGameUI();
-}
-
-// Kaart spelen
 function playCard(index) {
-    let playedCard = playerHand[index];
-    let topCard = discardPile[discardPile.length - 1];
+    const selectedCard = playerHand[index];
+    const [selectedColor, selectedValue] = selectedCard.split(" ");
+    const [topColor, topValue] = discardPile.split(" ");
 
-    // Controleer of de kaart geldig is
-    if (playedCard.color === topCard.color || playedCard.value === topCard.value || playedCard.color === "black") {
-        discardPile.push(playedCard);
+    if (selectedColor === topColor || selectedValue === topValue) {
+        discardPile = selectedCard;
         playerHand.splice(index, 1);
+        renderDiscardPile();
+        updateHand();
 
-        handleSpecialCard(playedCard);
-        updateGameUI();
+        // Reset timer naar 10 seconden bij succesvolle zet
+        timeLeft = 10;
+        updateTimerDisplay();
 
         if (playerHand.length === 0) {
-            document.getElementById("game-message").innerText = "🎉 Je hebt gewonnen!";
+            clearInterval(timerInterval);
+            setTimeout(() => {
+                alert("🎉 Jij hebt gewonnen! 🎉");
+                location.reload();
+            }, 500);
         }
     } else {
-        alert("Je kunt deze kaart niet spelen!");
+        alert("❌ Je mag deze kaart niet spelen. Kies een kaart met dezelfde kleur of hetzelfde nummer.");
     }
 }
 
-// Speciale kaarten verwerken
-function handleSpecialCard(card) {
-    if (card.value === "Skip") {
-        alert("Volgende speler wordt overgeslagen!");
-    } else if (card.value === "Reverse") {
-        alert("Speelrichting verandert! (niet geïmplementeerd voor single-player)");
-    } else if (card.value === "Draw Two") {
-        alert("Volgende speler moet 2 kaarten trekken! (niet geïmplementeerd)");
-    } else if (card.value === "Wild") {
-        let newColor = prompt("Kies een kleur: red, blue, green, yellow");
-        if (colors.includes(newColor)) {
-            card.color = newColor;
-        }
-    } else if (card.value === "Wild Draw Four") {
-        let newColor = prompt("Kies een kleur: red, blue, green, yellow");
-        if (colors.includes(newColor)) {
-            card.color = newColor;
-        }
-        alert("Volgende speler moet 4 kaarten trekken! (niet geïmplementeerd)");
+function drawCard() {
+    if (deck.length > 0) {
+        const newCard = deck.shift();
+        playerHand.push(newCard);
+        updateHand();
+    } else {
+        alert("Het deck is leeg!");
     }
 }
 
-// UI updaten
-function updateGameUI() {
-    let handDiv = document.getElementById("hand");
-    handDiv.innerHTML = "";
-    playerHand.forEach((card, index) => {
-        let cardDiv = document.createElement("div");
-        cardDiv.classList.add("card", card.color);
-        cardDiv.innerText = `${card.color.toUpperCase()} ${card.value}`;
-        cardDiv.onclick = () => playCard(index);
-        handDiv.appendChild(cardDiv);
-    });
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
 
-    let topCard = discardPile[discardPile.length - 1];
-    document.getElementById("discard-card").innerText = `${topCard.color.toUpperCase()} ${topCard.value}`;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert("⏰ Tijd is op! Je hebt verloren!");
+            location.reload();
+        }
+    }, 1000);
 }
 
-// Start het spel
-initializeGame();
+function updateTimerDisplay() {
+    const seconds = timeLeft;
+    document.getElementById("timer").textContent =
+        `Tijd over: ${seconds < 10 ? '0' : ''}${seconds}`;
+
+    if (timeLeft <= 5) {
+        document.getElementById("timer").style.backgroundColor = "rgba(255, 0, 0, 0.7)";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    deck = createDeck();
+    playerHand = drawCards(deck, 7);
+    discardPile = deck.shift();
+
+    updateHand();
+    renderDiscardPile();
+    startTimer();
+
+    document.getElementById("draw-card").addEventListener("click", drawCard);
+});
